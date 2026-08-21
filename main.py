@@ -1,0 +1,40 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from datetime import date
+from dynamo_db import create_expense as db_create, list_expenses as db_list, delete_expense as db_delete
+
+app = FastAPI()
+
+class Expense(BaseModel):
+    amount: float
+    category: str
+    description: str
+    date: date
+
+@app.get("/")
+def read_root():
+    return {"message": "Expense tracker API is running"}
+
+@app.post("/expenses")
+def create_expense(expense: Expense):
+    return db_create(expense.dict())
+
+@app.get("/expenses")
+def list_expenses():
+    return db_list()
+
+@app.get("/expenses/summary")
+def summary():
+    expenses = db_list()
+    totals = {}
+    for exp in expenses:
+        totals[exp["category"]] = totals.get(exp["category"], 0) + float(exp["amount"])
+    return totals
+
+@app.delete("/expenses/{expense_id}")
+def delete_expense(expense_id: str):
+    if not db_delete(expense_id):
+        raise HTTPException(status_code=404, detail="Expense not found")
+    return {"message" : f"Expense {expense_id} deleted"}
+
+
