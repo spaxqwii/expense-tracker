@@ -14,6 +14,8 @@ spec:
       labels:
         app: expense-tracker
     spec:
+      imagePullSecrets:
+      - name: ecr-credentials
       containers:
       - name: expense-tracker
         image: 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker:latest
