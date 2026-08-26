@@ -4,6 +4,7 @@ from datetime import date
 from dynamo_db import create_expense as db_create, list_expenses as db_list, delete_expense as db_delete
 from prometheus_client import Counter, Histogram, generate_latest
 from fastapi.responses import Response
+from fastapi.middleware.cors import CORSMiddleware
 import time
 
 # Define metrics
@@ -12,6 +13,14 @@ request_duration = Histogram('expense_tracker_request_duration_seconds', 'Reques
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Middleware to track metrics
 @app.middleware("http")
