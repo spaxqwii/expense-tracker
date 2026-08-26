@@ -1,5 +1,4 @@
 name: CI/CD Pipeline
-
 on:
   push:
     branches:
@@ -19,17 +18,24 @@ jobs:
           aws-region: eu-west-1
       
       - name: Login to Amazon ECR
-        run: |
-          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 353925322836.dkr.ecr.eu-west-1.amazonaws.com
+        run: aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 353925322836.dkr.ecr.eu-west-1.amazonaws.com
       
-      - name: Build Docker image
-        run: |
-          docker build -t expense-tracker:latest .
+      # Build and push backend
+      - name: Build backend Docker image
+        run: docker build -t expense-tracker-backend:latest .
       
-      - name: Tag image for ECR
-        run: |
-          docker tag expense-tracker:latest 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker:latest
+      - name: Tag backend image for ECR
+        run: docker tag expense-tracker-backend:latest 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker-backend:latest
       
-      - name: Push to ECR
-        run: |
-          docker push 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker:latest
+      - name: Push backend to ECR
+        run: docker push 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker-backend:latest
+      
+      # Build and push frontend
+      - name: Build frontend Docker image
+        run: docker build -f frontend/Dockerfile -t expense-tracker-frontend:latest ./frontend
+      
+      - name: Tag frontend image for ECR
+        run: docker tag expense-tracker-frontend:latest 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker-frontend:latest
+      
+      - name: Push frontend to ECR
+        run: docker push 353925322836.dkr.ecr.eu-west-1.amazonaws.com/expense-tracker-frontend:latest
