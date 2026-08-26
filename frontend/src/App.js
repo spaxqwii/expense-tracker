@@ -7,7 +7,7 @@ import ExpenseSummary from './components/ExpenseSummary';
 function App() {
   const [expenses, setExpenses] = useState([]);
   const [summary, setSummary] = useState({});
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  const API_URL = process.env.REACT_APP_API_URL || '/api';
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
